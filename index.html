@@ -1,0 +1,1866 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HADAERU — 敏感肌コミュニティ</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;700;800&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #faf6f0;
+  --warm-white: #fffdf9;
+  --blush: #f0d9cc;
+  --dusty-rose: #c9a090;
+  --terracotta: #b07060;
+  --terracotta-dark: #8a5545;
+  --sage: #8a9e8a;
+  --deep-sage: #5a7a5a;
+  --charcoal: #2c2c2c;
+  --mid-gray: #7a7a7a;
+  --light-gray: #f0ece8;
+  --light-border: #e8ddd5;
+  --shadow: rgba(176,112,96,0.12);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  background:var(--cream);
+  color:var(--charcoal);
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  font-weight:300;
+  line-height:1.8;
+  overflow-x:hidden;
+}
+
+/* ===================== NAV ===================== */
+nav {
+  position:fixed; top:0; width:100%;
+  padding:0.9rem 2.5rem;
+  display:flex; align-items:center; gap:1.5rem;
+  background:rgba(250,246,240,0.92);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--light-border);
+  z-index:500;
+}
+.nav-logo {
+  font-family:'Shippori Mincho',serif;
+  font-size:1.4rem; font-weight:800;
+  color:var(--terracotta);
+  text-decoration:none; white-space:nowrap;
+  letter-spacing:0.15em;
+}
+.nav-logo small {
+  display:block; font-size:0.55rem;
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  font-weight:300; letter-spacing:0.35em;
+  color:var(--mid-gray); margin-top:-3px;
+}
+.nav-search {
+  flex:1; max-width:480px;
+  position:relative;
+}
+.nav-search input {
+  width:100%; padding:0.55rem 1rem 0.55rem 2.8rem;
+  border:1.5px solid var(--light-border);
+  border-radius:50px; background:white;
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  font-size:0.85rem; color:var(--charcoal);
+  outline:none; transition:border-color 0.3s, box-shadow 0.3s;
+}
+.nav-search input:focus {
+  border-color:var(--dusty-rose);
+  box-shadow:0 0 0 3px rgba(201,160,144,0.15);
+}
+.nav-search input::placeholder { color:#bbb; }
+.nav-search .search-icon {
+  position:absolute; left:1rem; top:50%;
+  transform:translateY(-50%);
+  color:var(--dusty-rose); font-size:0.9rem;
+}
+.search-dropdown {
+  display:none; position:absolute; top:calc(100% + 8px);
+  left:0; right:0; background:white;
+  border:1px solid var(--light-border);
+  border-radius:12px; box-shadow:0 8px 30px var(--shadow);
+  overflow:hidden; z-index:600;
+}
+.search-dropdown.show { display:block; }
+.search-result-item {
+  padding:0.7rem 1.2rem; font-size:0.85rem;
+  cursor:pointer; display:flex; align-items:center; gap:0.8rem;
+  transition:background 0.2s;
+  border-bottom:1px solid var(--light-border);
+}
+.search-result-item:last-child { border-bottom:none; }
+.search-result-item:hover { background:var(--light-gray); }
+.search-result-item .result-type {
+  font-size:0.7rem; padding:0.15rem 0.5rem;
+  border-radius:20px; font-weight:500;
+}
+.type-product { background:#fde8e0; color:var(--terracotta); }
+.type-brand { background:#e0f0e0; color:var(--deep-sage); }
+.type-article { background:#e8e0f0; color:#7060b0; }
+nav ul {
+  list-style:none; display:flex; gap:0.3rem;
+  margin-left:auto; align-items:center;
+}
+nav ul li a {
+  text-decoration:none; color:var(--charcoal);
+  font-size:0.8rem; letter-spacing:0.1em;
+  padding:0.4rem 0.8rem; border-radius:20px;
+  transition:all 0.2s; font-weight:400;
+  white-space:nowrap;
+}
+nav ul li a:hover { background:var(--blush); color:var(--terracotta); }
+.btn-nav-login {
+  background:white !important;
+  border:1.5px solid var(--dusty-rose) !important;
+  color:var(--terracotta) !important;
+}
+.btn-nav-register {
+  background:var(--terracotta) !important;
+  color:white !important;
+}
+.btn-nav-register:hover {
+  background:var(--terracotta-dark) !important;
+}
+
+/* ===================== MODALS ===================== */
+.modal-overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(44,44,44,0.5);
+  backdrop-filter:blur(4px);
+  z-index:1000; align-items:center; justify-content:center;
+}
+.modal-overlay.show { display:flex; }
+.modal {
+  background:white; border-radius:24px;
+  padding:2.5rem; width:90%; max-width:460px;
+  position:relative; animation:slideUp 0.3s ease;
+  max-height:90vh; overflow-y:auto;
+}
+@keyframes slideUp {
+  from { opacity:0; transform:translateY(20px); }
+  to { opacity:1; transform:translateY(0); }
+}
+.modal-close {
+  position:absolute; top:1.2rem; right:1.5rem;
+  background:none; border:none; font-size:1.4rem;
+  cursor:pointer; color:var(--mid-gray);
+  transition:color 0.2s;
+}
+.modal-close:hover { color:var(--charcoal); }
+.modal h2 {
+  font-family:'Shippori Mincho',serif;
+  font-size:1.6rem; font-weight:700;
+  margin-bottom:0.3rem; color:var(--charcoal);
+}
+.modal .subtitle {
+  font-size:0.85rem; color:var(--mid-gray);
+  margin-bottom:2rem;
+}
+.form-group { margin-bottom:1.3rem; }
+.form-group label {
+  display:block; font-size:0.8rem;
+  font-weight:500; color:var(--charcoal);
+  margin-bottom:0.4rem; letter-spacing:0.05em;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width:100%; padding:0.7rem 1rem;
+  border:1.5px solid var(--light-border);
+  border-radius:10px; font-family:'Zen Kaku Gothic New',sans-serif;
+  font-size:0.88rem; color:var(--charcoal);
+  outline:none; transition:border-color 0.3s;
+  background:var(--cream);
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color:var(--dusty-rose);
+}
+.form-group textarea { resize:vertical; min-height:80px; }
+.star-rating { display:flex; gap:0.3rem; margin-top:0.3rem; }
+.star-rating span {
+  font-size:1.8rem; cursor:pointer;
+  color:#ddd; transition:color 0.2s;
+}
+.star-rating span.active { color:#f0a050; }
+.btn-submit {
+  width:100%; padding:0.85rem;
+  background:var(--terracotta); color:white;
+  border:none; border-radius:50px;
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  font-size:0.9rem; font-weight:500;
+  letter-spacing:0.1em; cursor:pointer;
+  transition:all 0.3s; margin-top:0.5rem;
+}
+.btn-submit:hover {
+  background:var(--terracotta-dark);
+  transform:translateY(-1px);
+  box-shadow:0 6px 20px rgba(176,112,96,0.3);
+}
+.modal-switch {
+  text-align:center; margin-top:1.2rem;
+  font-size:0.83rem; color:var(--mid-gray);
+}
+.modal-switch a {
+  color:var(--terracotta); cursor:pointer;
+  text-decoration:underline;
+}
+/* Image upload */
+.image-upload-area {
+  border:2px dashed var(--light-border);
+  border-radius:12px; padding:1.5rem;
+  text-align:center; cursor:pointer;
+  transition:all 0.3s; margin-top:0.4rem;
+  background:var(--cream);
+}
+.image-upload-area:hover {
+  border-color:var(--dusty-rose);
+  background:rgba(240,217,204,0.15);
+}
+.image-upload-area .upload-icon { font-size:2rem; margin-bottom:0.5rem; }
+.image-upload-area p { font-size:0.8rem; color:var(--mid-gray); }
+.image-preview {
+  display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.8rem;
+}
+.image-preview img {
+  width:70px; height:70px; object-fit:cover;
+  border-radius:8px; border:1px solid var(--light-border);
+}
+
+/* ===================== HERO ===================== */
+.hero {
+  min-height:100vh;
+  display:grid; grid-template-columns:1fr 1fr;
+  align-items:center;
+  padding:8rem 4rem 4rem;
+  position:relative; overflow:hidden;
+}
+.hero-blob {
+  position:absolute; right:-5%; top:10%;
+  width:52%; height:80%;
+  background:radial-gradient(ellipse at center, var(--blush) 0%, transparent 65%);
+  border-radius:60% 40% 70% 30% / 50% 60% 40% 50%;
+  animation:morphBlob 9s ease-in-out infinite;
+  z-index:0; pointer-events:none;
+}
+@keyframes morphBlob {
+  0%,100% { border-radius:60% 40% 70% 30% / 50% 60% 40% 50%; transform:rotate(0deg) scale(1); }
+  33% { border-radius:40% 60% 30% 70% / 60% 40% 70% 30%; transform:rotate(5deg) scale(1.03); }
+  66% { border-radius:70% 30% 50% 50% / 30% 60% 40% 70%; transform:rotate(-3deg) scale(0.97); }
+}
+.hero-text { position:relative; z-index:2; animation:fadeUp 0.9s ease both; }
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(28px); }
+  to { opacity:1; transform:translateY(0); }
+}
+.hero-tag {
+  display:inline-block; font-size:0.7rem;
+  letter-spacing:0.4em; color:var(--sage);
+  text-transform:uppercase; margin-bottom:1.2rem;
+  padding:0.35rem 1rem; border:1px solid var(--sage);
+  border-radius:20px;
+}
+.hero h1 {
+  font-family:'Shippori Mincho',serif;
+  font-size:clamp(2.5rem,4.5vw,4rem);
+  font-weight:800; line-height:1.3;
+  color:var(--charcoal); margin-bottom:1.3rem;
+}
+.hero h1 em { font-style:normal; color:var(--terracotta); }
+.hero p {
+  font-size:0.95rem; color:var(--mid-gray);
+  max-width:460px; margin-bottom:2rem; line-height:2.1;
+}
+.hero-btns { display:flex; gap:1rem; flex-wrap:wrap; }
+.btn-primary {
+  display:inline-block; background:var(--terracotta); color:white;
+  padding:0.85rem 2rem; border-radius:50px;
+  text-decoration:none; font-size:0.85rem;
+  letter-spacing:0.12em; font-weight:500;
+  transition:all 0.3s; cursor:pointer; border:none;
+  box-shadow:0 4px 20px rgba(176,112,96,0.3);
+}
+.btn-primary:hover {
+  background:var(--terracotta-dark);
+  transform:translateY(-2px);
+  box-shadow:0 8px 28px rgba(176,112,96,0.35);
+}
+.btn-outline {
+  display:inline-block;
+  border:1.5px solid var(--terracotta); color:var(--terracotta);
+  padding:0.85rem 2rem; border-radius:50px;
+  text-decoration:none; font-size:0.85rem;
+  letter-spacing:0.12em; font-weight:500;
+  transition:all 0.3s; cursor:pointer; background:transparent;
+}
+.btn-outline:hover { background:var(--terracotta); color:white; }
+.hero-visual {
+  position:relative; z-index:2; display:flex;
+  justify-content:center; align-items:center;
+  animation:fadeUp 0.9s 0.25s ease both;
+}
+.hero-stats {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:1.2rem; max-width:380px;
+}
+.stat-card {
+  background:white; border-radius:18px;
+  padding:1.5rem; text-align:center;
+  border:1px solid var(--light-border);
+  box-shadow:0 4px 20px var(--shadow);
+  transition:transform 0.3s;
+}
+.stat-card:hover { transform:translateY(-4px); }
+.stat-card .num {
+  font-family:'Shippori Mincho',serif;
+  font-size:2rem; font-weight:800;
+  color:var(--terracotta); display:block;
+}
+.stat-card .label { font-size:0.75rem; color:var(--mid-gray); }
+.stat-card:first-child {
+  grid-column:1/-1; display:flex; align-items:center;
+  gap:1rem; text-align:left;
+}
+.stat-card:first-child .num { font-size:2.5rem; }
+
+/* ===================== SECTIONS COMMON ===================== */
+.section-wrap { padding:5rem 4rem; }
+.section-label {
+  font-size:0.68rem; letter-spacing:0.5em;
+  text-transform:uppercase; color:var(--dusty-rose);
+  margin-bottom:0.6rem; font-weight:400;
+}
+.section-title {
+  font-family:'Shippori Mincho',serif;
+  font-size:clamp(1.6rem,2.8vw,2.4rem);
+  font-weight:700; line-height:1.4;
+  color:var(--charcoal); margin-bottom:0.8rem;
+}
+.section-header {
+  display:flex; justify-content:space-between;
+  align-items:flex-end; margin-bottom:2.5rem; flex-wrap:wrap; gap:1rem;
+}
+.see-all {
+  font-size:0.8rem; color:var(--terracotta);
+  text-decoration:none; letter-spacing:0.1em;
+  display:flex; align-items:center; gap:0.3rem;
+  transition:gap 0.2s;
+}
+.see-all:hover { gap:0.6rem; }
+
+/* ===================== LATEST REVIEWS ===================== */
+.reviews-section { background:var(--warm-white); border-top:1px solid var(--light-border); }
+.reviews-grid {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem;
+}
+.review-card {
+  background:white; border-radius:18px;
+  overflow:hidden; border:1px solid var(--light-border);
+  transition:all 0.35s; cursor:pointer;
+}
+.review-card:hover {
+  transform:translateY(-5px);
+  box-shadow:0 16px 50px var(--shadow);
+}
+.review-card-img {
+  width:100%; height:160px; object-fit:cover;
+  background:linear-gradient(135deg, var(--blush), var(--light-gray));
+  display:flex; align-items:center; justify-content:center;
+  font-size:3rem;
+}
+.review-card-body { padding:1.3rem; }
+.review-product-name {
+  font-size:0.7rem; color:var(--dusty-rose);
+  letter-spacing:0.15em; text-transform:uppercase;
+  margin-bottom:0.4rem;
+}
+.review-card-body h3 {
+  font-family:'Shippori Mincho',serif;
+  font-size:1rem; font-weight:700;
+  margin-bottom:0.6rem; line-height:1.5;
+}
+.stars { color:#f0a050; font-size:0.85rem; letter-spacing:0.05em; }
+.review-text {
+  font-size:0.82rem; color:var(--mid-gray);
+  margin-top:0.5rem; line-height:1.9;
+  display:-webkit-box; -webkit-line-clamp:3;
+  -webkit-box-orient:vertical; overflow:hidden;
+}
+.review-footer {
+  display:flex; align-items:center; gap:0.7rem;
+  margin-top:1rem; padding-top:0.8rem;
+  border-top:1px solid var(--light-border);
+}
+.avatar {
+  width:28px; height:28px; border-radius:50%;
+  background:linear-gradient(135deg, var(--blush), var(--dusty-rose));
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.75rem; color:white; font-weight:600;
+}
+.reviewer-name { font-size:0.78rem; color:var(--mid-gray); }
+.review-date { font-size:0.72rem; color:#bbb; margin-left:auto; }
+
+/* ===================== PRODUCTS ===================== */
+.products-section { border-top:1px solid var(--light-border); }
+.filter-tabs {
+  display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:2rem;
+}
+.filter-tab {
+  padding:0.4rem 1.1rem; border-radius:50px;
+  border:1px solid var(--light-border);
+  font-size:0.78rem; cursor:pointer;
+  transition:all 0.2s; background:white;
+  font-family:'Zen Kaku Gothic New',sans-serif;
+}
+.filter-tab.active {
+  background:var(--terracotta); color:white; border-color:var(--terracotta);
+}
+.filter-tab:hover:not(.active) {
+  border-color:var(--dusty-rose); color:var(--terracotta);
+}
+.products-grid {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:1.3rem;
+}
+.product-card {
+  background:white; border-radius:16px;
+  border:1px solid var(--light-border);
+  overflow:hidden; transition:all 0.3s; cursor:pointer;
+}
+.product-card:hover {
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px var(--shadow);
+}
+.product-img {
+  height:130px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:2.5rem;
+  background:linear-gradient(135deg,var(--blush) 0%,var(--warm-white) 100%);
+}
+.product-body { padding:1rem; }
+.product-brand {
+  font-size:0.68rem; color:var(--sage);
+  letter-spacing:0.2em; text-transform:uppercase;
+  margin-bottom:0.3rem;
+}
+.product-body h4 {
+  font-family:'Shippori Mincho',serif;
+  font-size:0.9rem; font-weight:700;
+  margin-bottom:0.4rem; line-height:1.5;
+}
+.product-rating {
+  display:flex; align-items:center; gap:0.4rem;
+}
+.product-rating .stars { font-size:0.75rem; }
+.product-rating .score { font-size:0.78rem; font-weight:500; color:var(--charcoal); }
+.product-rating .count { font-size:0.72rem; color:#bbb; }
+.product-tags { display:flex; gap:0.3rem; flex-wrap:wrap; margin-top:0.6rem; }
+.product-tag {
+  font-size:0.65rem; padding:0.15rem 0.5rem;
+  border-radius:20px; background:var(--light-gray);
+  color:var(--mid-gray);
+}
+
+/* ===================== ARTICLES ===================== */
+.articles-section {
+  background:var(--charcoal); color:white;
+  border-top:1px solid var(--light-border);
+}
+.articles-section .section-label { color:var(--dusty-rose); }
+.articles-section .section-title { color:white; }
+.articles-section .see-all { color:var(--dusty-rose); }
+.articles-grid { display:grid; grid-template-columns:2fr 1fr 1fr; gap:1.5rem; }
+.article-card {
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:18px; overflow:hidden;
+  transition:all 0.3s; cursor:pointer;
+}
+.article-card:hover {
+  background:rgba(176,112,96,0.15);
+  border-color:var(--dusty-rose);
+  transform:translateY(-4px);
+}
+.article-img {
+  height:120px; display:flex; align-items:center;
+  justify-content:center; font-size:2.8rem;
+  background:rgba(255,255,255,0.05);
+}
+.article-card.featured .article-img { height:180px; font-size:4rem; }
+.article-body { padding:1.2rem; }
+.article-tag {
+  font-size:0.68rem; letter-spacing:0.2em;
+  text-transform:uppercase; color:var(--dusty-rose);
+  margin-bottom:0.5rem;
+}
+.article-card h3 {
+  font-family:'Shippori Mincho',serif;
+  font-size:0.95rem; font-weight:700;
+  line-height:1.5; color:white;
+}
+.article-card.featured h3 { font-size:1.15rem; }
+.article-meta {
+  font-size:0.73rem; color:rgba(255,255,255,0.4);
+  margin-top:0.7rem;
+}
+
+/* ===================== FAQ ===================== */
+.faq-section { background:var(--warm-white); border-top:1px solid var(--light-border); }
+.faq-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; }
+.faq-item {
+  background:white; border-radius:14px;
+  border:1px solid var(--light-border);
+  overflow:hidden;
+}
+.faq-q {
+  padding:1.1rem 1.3rem;
+  display:flex; justify-content:space-between; align-items:center;
+  cursor:pointer; transition:background 0.2s;
+  gap:1rem;
+}
+.faq-q:hover { background:var(--light-gray); }
+.faq-q-text {
+  font-size:0.88rem; font-weight:500; color:var(--charcoal);
+}
+.faq-toggle {
+  color:var(--dusty-rose); font-size:1.1rem;
+  transition:transform 0.3s; flex-shrink:0;
+}
+.faq-item.open .faq-toggle { transform:rotate(45deg); }
+.faq-a {
+  display:none; padding:0 1.3rem 1.1rem;
+  font-size:0.83rem; color:var(--mid-gray);
+  line-height:2; border-top:1px solid var(--light-border);
+  padding-top:0.8rem;
+}
+.faq-item.open .faq-a { display:block; }
+
+/* ===================== POST CTA ===================== */
+.post-cta {
+  background:linear-gradient(135deg, var(--blush) 0%, var(--cream) 100%);
+  border-top:1px solid var(--light-border);
+  text-align:center;
+}
+.post-cta .section-title { font-size:clamp(1.8rem,3.5vw,3rem); }
+.post-cta p { color:var(--mid-gray); max-width:500px; margin:0 auto 2rem; font-size:0.92rem; }
+
+/* ===================== FOOTER ===================== */
+footer {
+  background:var(--charcoal); color:rgba(255,255,255,0.5);
+  padding:2.5rem 4rem;
+  display:flex; justify-content:space-between;
+  align-items:center; font-size:0.78rem; letter-spacing:0.08em;
+  flex-wrap:wrap; gap:1rem;
+}
+footer .nav-logo { color:rgba(255,255,255,0.75); font-size:1.15rem; }
+footer .nav-logo small { color:rgba(255,255,255,0.3); }
+
+/* ===================== TOAST ===================== */
+.toast {
+  position:fixed; bottom:2rem; right:2rem;
+  background:var(--charcoal); color:white;
+  padding:0.9rem 1.5rem; border-radius:12px;
+  font-size:0.85rem; z-index:2000;
+  transform:translateY(100px); opacity:0;
+  transition:all 0.4s; box-shadow:0 8px 30px rgba(0,0,0,0.2);
+  display:flex; align-items:center; gap:0.7rem;
+}
+.toast.show { transform:translateY(0); opacity:1; }
+.toast.success { border-left:3px solid var(--sage); }
+.toast.error { border-left:3px solid #c0605a; }
+
+/* ===================== LOGGED IN STATE ===================== */
+.user-menu {
+  display:none; align-items:center; gap:0.8rem;
+  margin-left:auto;
+}
+.user-menu.show { display:flex; }
+.user-avatar {
+  width:34px; height:34px; border-radius:50%;
+  background:linear-gradient(135deg, var(--blush), var(--dusty-rose));
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.85rem; color:white; font-weight:600;
+  cursor:pointer;
+}
+.user-name { font-size:0.82rem; color:var(--charcoal); font-weight:400; }
+.btn-post-nav {
+  background:var(--terracotta); color:white;
+  border:none; border-radius:50px;
+  padding:0.45rem 1.1rem; font-size:0.78rem;
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  cursor:pointer; letter-spacing:0.1em;
+  transition:all 0.3s;
+}
+.btn-post-nav:hover { background:var(--terracotta-dark); }
+.nav-auth-btns { display:flex; gap:0.5rem; margin-left:auto; }
+
+/* ===================== PRODUCT DETAIL MODAL ===================== */
+#productDetailModal .modal {
+  max-width:680px; padding:0; overflow:hidden;
+}
+.product-detail-header {
+  display:flex; align-items:center; gap:1.8rem;
+  padding:2rem 2rem 1.5rem;
+  background:linear-gradient(135deg, var(--blush) 0%, var(--warm-white) 100%);
+  border-bottom:1px solid var(--light-border);
+  position:relative;
+}
+.product-detail-emoji {
+  font-size:4rem; width:90px; height:90px;
+  background:white; border-radius:20px;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 20px var(--shadow); flex-shrink:0;
+}
+.product-detail-header h2 {
+  font-family:'Shippori Mincho',serif;
+  font-size:1.4rem; font-weight:800; margin-bottom:0.25rem;
+}
+.product-detail-brand {
+  font-size:0.78rem; color:var(--sage);
+  letter-spacing:0.2em; text-transform:uppercase; margin-bottom:0.5rem;
+}
+.product-detail-rating-row {
+  display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;
+}
+.product-detail-rating-row .stars { font-size:1rem; }
+.product-detail-rating-row .score {
+  font-family:'Shippori Mincho',serif;
+  font-size:1.3rem; font-weight:700; color:var(--terracotta);
+}
+.product-detail-rating-row .count { font-size:0.8rem; color:var(--mid-gray); }
+.product-detail-close {
+  position:absolute; top:1rem; right:1.2rem;
+  background:rgba(255,255,255,0.7); border:none;
+  width:32px; height:32px; border-radius:50%;
+  font-size:1.1rem; cursor:pointer; color:var(--mid-gray);
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s;
+}
+.product-detail-close:hover { background:white; color:var(--charcoal); }
+
+.product-detail-body { padding:1.8rem 2rem; overflow-y:auto; max-height:65vh; }
+
+/* Rating breakdown */
+.rating-breakdown { margin-bottom:2rem; }
+.rating-breakdown h4 {
+  font-family:'Shippori Mincho',serif;
+  font-size:1rem; font-weight:700; margin-bottom:1rem; color:var(--charcoal);
+}
+.rating-bar-row {
+  display:flex; align-items:center; gap:0.8rem; margin-bottom:0.45rem;
+}
+.rating-bar-label { font-size:0.78rem; color:var(--mid-gray); width:30px; text-align:right; }
+.rating-bar-track {
+  flex:1; height:8px; background:var(--light-gray);
+  border-radius:10px; overflow:hidden;
+}
+.rating-bar-fill {
+  height:100%;
+  background:linear-gradient(90deg, var(--blush), var(--terracotta));
+  border-radius:10px; transition:width 0.6s ease;
+}
+.rating-bar-count { font-size:0.73rem; color:#bbb; width:30px; }
+
+/* Ingredient badges */
+.ingredients-section-detail { margin-bottom:2rem; }
+.ingredients-section-detail h4 {
+  font-family:'Shippori Mincho',serif;
+  font-size:1rem; font-weight:700; margin-bottom:0.8rem;
+}
+.ingredient-badges { display:flex; flex-wrap:wrap; gap:0.5rem; }
+.ing-badge {
+  padding:0.3rem 0.9rem; border-radius:20px;
+  font-size:0.75rem; font-weight:500; letter-spacing:0.05em;
+}
+.ing-badge.good { background:#e8f4e8; color:var(--deep-sage); border:1px solid #c0dcc0; }
+.ing-badge.neutral { background:var(--light-gray); color:var(--mid-gray); border:1px solid var(--light-border); }
+
+/* Reviews in detail */
+.detail-reviews-header {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:1rem;
+}
+.detail-reviews-header h4 {
+  font-family:'Shippori Mincho',serif;
+  font-size:1rem; font-weight:700;
+}
+.btn-write-review {
+  background:var(--terracotta); color:white;
+  border:none; border-radius:50px;
+  padding:0.4rem 1rem; font-size:0.78rem;
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  cursor:pointer; letter-spacing:0.08em; transition:all 0.3s;
+}
+.btn-write-review:hover { background:var(--terracotta-dark); }
+.detail-review-item {
+  padding:1.1rem; background:var(--cream);
+  border-radius:14px; border:1px solid var(--light-border);
+  margin-bottom:0.8rem; transition:box-shadow 0.2s;
+}
+.detail-review-item:hover { box-shadow:0 4px 16px var(--shadow); }
+.detail-review-top {
+  display:flex; align-items:center; gap:0.7rem; margin-bottom:0.5rem;
+}
+.detail-review-top .avatar { width:32px; height:32px; font-size:0.8rem; flex-shrink:0; }
+.detail-review-top .name { font-size:0.83rem; font-weight:500; }
+.detail-review-top .stars { font-size:0.8rem; margin-left:auto; }
+.detail-review-top .date { font-size:0.72rem; color:#bbb; }
+.detail-review-text { font-size:0.83rem; color:var(--mid-gray); line-height:1.9; }
+
+/* ===================== ARTICLE DETAIL MODAL ===================== */
+#articleDetailModal .modal {
+  max-width:720px; padding:0; overflow:hidden;
+}
+.article-detail-header {
+  padding:2rem 2rem 1.5rem;
+  background:var(--charcoal);
+  position:relative;
+}
+.article-detail-header .back-btn {
+  display:inline-flex; align-items:center; gap:0.4rem;
+  font-size:0.75rem; color:rgba(255,255,255,0.5);
+  background:none; border:none; cursor:pointer;
+  letter-spacing:0.1em; margin-bottom:1rem;
+  transition:color 0.2s; font-family:'Zen Kaku Gothic New',sans-serif;
+}
+.article-detail-header .back-btn:hover { color:white; }
+.article-detail-tag {
+  display:inline-block; font-size:0.68rem;
+  letter-spacing:0.3em; text-transform:uppercase;
+  color:var(--dusty-rose); margin-bottom:0.7rem;
+  background:rgba(201,160,144,0.15);
+  padding:0.25rem 0.8rem; border-radius:20px;
+  border:1px solid rgba(201,160,144,0.3);
+}
+.article-detail-header h2 {
+  font-family:'Shippori Mincho',serif;
+  font-size:1.35rem; font-weight:800;
+  color:white; line-height:1.5; margin-bottom:1rem;
+}
+.article-detail-meta {
+  display:flex; align-items:center; gap:1rem; flex-wrap:wrap;
+}
+.article-author-row {
+  display:flex; align-items:center; gap:0.6rem;
+}
+.article-author-row .avatar {
+  width:32px; height:32px; font-size:0.8rem;
+}
+.article-author-row .name { font-size:0.82rem; color:rgba(255,255,255,0.75); }
+.article-detail-date { font-size:0.75rem; color:rgba(255,255,255,0.4); }
+.article-detail-close {
+  position:absolute; top:1rem; right:1.2rem;
+  background:rgba(255,255,255,0.1); border:none;
+  width:32px; height:32px; border-radius:50%;
+  font-size:1.1rem; cursor:pointer; color:rgba(255,255,255,0.6);
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s;
+}
+.article-detail-close:hover { background:rgba(255,255,255,0.2); color:white; }
+
+.article-detail-body {
+  padding:2rem; overflow-y:auto; max-height:65vh;
+  background:var(--warm-white);
+}
+.article-content {
+  font-size:0.92rem; color:var(--charcoal);
+  line-height:2.2; margin-bottom:2rem;
+}
+.article-content h3 {
+  font-family:'Shippori Mincho',serif;
+  font-size:1.1rem; font-weight:700;
+  color:var(--charcoal); margin:1.5rem 0 0.6rem;
+  padding-left:0.8rem;
+  border-left:3px solid var(--dusty-rose);
+}
+.article-content p { margin-bottom:1rem; color:var(--mid-gray); }
+.article-content ul { padding-left:1.5rem; margin-bottom:1rem; }
+.article-content li { color:var(--mid-gray); margin-bottom:0.4rem; font-size:0.88rem; }
+.article-content .highlight-box {
+  background:linear-gradient(135deg,rgba(240,217,204,0.4),rgba(250,246,240,0.8));
+  border:1px solid var(--light-border); border-radius:12px;
+  padding:1.2rem 1.5rem; margin:1.2rem 0;
+}
+.article-content .highlight-box p { color:var(--charcoal); margin:0; font-size:0.88rem; }
+
+/* Article comments */
+.article-comments-section { border-top:1px solid var(--light-border); padding-top:1.5rem; }
+.article-comments-section h4 {
+  font-family:'Shippori Mincho',serif;
+  font-size:1rem; font-weight:700; margin-bottom:1rem;
+}
+.comment-item {
+  display:flex; gap:0.8rem; margin-bottom:1.1rem;
+  padding-bottom:1.1rem; border-bottom:1px solid var(--light-border);
+}
+.comment-item:last-of-type { border-bottom:none; }
+.comment-body { flex:1; }
+.comment-header {
+  display:flex; align-items:center; gap:0.5rem; margin-bottom:0.3rem;
+}
+.comment-name { font-size:0.82rem; font-weight:500; }
+.comment-date { font-size:0.72rem; color:#bbb; }
+.comment-text { font-size:0.83rem; color:var(--mid-gray); line-height:1.8; }
+.comment-form { margin-top:1.2rem; display:flex; gap:0.7rem; align-items:flex-start; }
+.comment-form textarea {
+  flex:1; padding:0.65rem 1rem;
+  border:1.5px solid var(--light-border);
+  border-radius:12px; resize:none; height:70px;
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  font-size:0.85rem; outline:none;
+  transition:border-color 0.3s; background:white;
+}
+.comment-form textarea:focus { border-color:var(--dusty-rose); }
+.btn-comment-send {
+  background:var(--terracotta); color:white; border:none;
+  border-radius:12px; padding:0.65rem 1.1rem;
+  font-size:0.8rem; cursor:pointer;
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  transition:all 0.3s; white-space:nowrap; align-self:flex-end;
+}
+.btn-comment-send:hover { background:var(--terracotta-dark); }
+
+/* ===================== SCROLL ANIM ===================== */
+.fade-in {
+  opacity:0; transform:translateY(22px);
+  transition:opacity 0.7s ease, transform 0.7s ease;
+}
+.fade-in.visible { opacity:1; transform:translateY(0); }
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width:960px) {
+  nav { padding:0.8rem 1.2rem; gap:0.8rem; }
+  nav ul { display:none; }
+  .nav-auth-btns { display:none; }
+  .hero { grid-template-columns:1fr; padding:7rem 2rem 3rem; }
+  .hero-visual { display:none; }
+  .section-wrap { padding:3.5rem 1.5rem; }
+  .reviews-grid { grid-template-columns:1fr; }
+  .products-grid { grid-template-columns:repeat(2,1fr); }
+  .articles-grid { grid-template-columns:1fr; }
+  .faq-grid { grid-template-columns:1fr; }
+  footer { padding:2rem 1.5rem; flex-direction:column; text-align:center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav>
+  <a href="#" class="nav-logo">
+    HADAERU
+    <small>敏感肌コミュニティ</small>
+  </a>
+  <div class="nav-search">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="商品・ブランド・記事名で検索..." autocomplete="off">
+    <div class="search-dropdown" id="searchDropdown"></div>
+  </div>
+  <ul id="navLinks">
+    <li><a href="#reviews">レビュー</a></li>
+    <li><a href="#products">商品</a></li>
+    <li><a href="#articles">記事</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <div class="nav-auth-btns" id="navAuthBtns">
+    <a href="#" class="nav-logo" style="font-size:0;padding:0;border:none" onclick="openModal('loginModal');return false;">
+      <button class="btn-nav-login" style="font-family:'Zen Kaku Gothic New',sans-serif;font-size:0.78rem;padding:0.45rem 1rem;border-radius:50px;cursor:pointer;border:1.5px solid var(--dusty-rose);background:white;color:var(--terracotta);letter-spacing:0.1em;">ログイン</button>
+    </a>
+    <button class="btn-nav-register" onclick="openModal('registerModal')" style="font-family:'Zen Kaku Gothic New',sans-serif;font-size:0.78rem;padding:0.45rem 1rem;border-radius:50px;cursor:pointer;border:none;background:var(--terracotta);color:white;letter-spacing:0.1em;">新規登録</button>
+  </div>
+  <div class="user-menu" id="userMenu">
+    <div class="user-avatar" id="userAvatarNav">？</div>
+    <span class="user-name" id="userNameNav">ゲスト</span>
+    <div class="post-dropdown-wrap" style="position:relative">
+      <button class="btn-post-nav" onclick="togglePostDropdown()">＋ 投稿する ▾</button>
+      <div id="postDropdown" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:white;border:1px solid var(--light-border);border-radius:12px;box-shadow:0 8px 28px var(--shadow);min-width:170px;overflow:hidden;z-index:700;">
+        <div onclick="closePostDropdown();checkLoginForPost('review')" style="padding:0.75rem 1.2rem;font-size:0.83rem;cursor:pointer;display:flex;align-items:center;gap:0.6rem;border-bottom:1px solid var(--light-border);transition:background 0.2s;" onmouseover="this.style.background='var(--light-gray)'" onmouseout="this.style.background=''">✍️ レビューを投稿</div>
+        <div onclick="closePostDropdown();checkLoginForPost('article')" style="padding:0.75rem 1.2rem;font-size:0.83rem;cursor:pointer;display:flex;align-items:center;gap:0.6rem;transition:background 0.2s;" onmouseover="this.style.background='var(--light-gray)'" onmouseout="this.style.background=''">📝 記事を投稿</div>
+      </div>
+    </div>
+    <button onclick="logout()" style="background:none;border:none;font-size:0.78rem;color:var(--mid-gray);cursor:pointer;letter-spacing:0.05em;">ログアウト</button>
+  </div>
+</nav>
+
+<!-- ============ LOGIN MODAL ============ -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('loginModal')">×</button>
+    <h2>おかえりなさい 🌸</h2>
+    <p class="subtitle">アカウントにログインしてください</p>
+    <div class="form-group">
+      <label>メールアドレス</label>
+      <input type="email" id="loginEmail" placeholder="example@email.com">
+    </div>
+    <div class="form-group">
+      <label>パスワード</label>
+      <input type="password" id="loginPassword" placeholder="••••••••">
+    </div>
+    <button class="btn-submit" onclick="handleLogin()">ログイン</button>
+    <p class="modal-switch">アカウントをお持ちでない方は <a onclick="switchModal('loginModal','registerModal')">新規登録</a></p>
+  </div>
+</div>
+
+<!-- ============ REGISTER MODAL ============ -->
+<div class="modal-overlay" id="registerModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('registerModal')">×</button>
+    <h2>はじめまして 🌿</h2>
+    <p class="subtitle">アカウントを作成して、肌の情報を共有しましょう</p>
+    <div class="form-group">
+      <label>ニックネーム</label>
+      <input type="text" id="regName" placeholder="さくら">
+    </div>
+    <div class="form-group">
+      <label>メールアドレス</label>
+      <input type="email" id="regEmail" placeholder="example@email.com">
+    </div>
+    <div class="form-group">
+      <label>肌タイプ</label>
+      <select id="regSkinType">
+        <option value="">選択してください</option>
+        <option>乾燥性敏感肌</option>
+        <option>混合性敏感肌</option>
+        <option>アレルギー性敏感肌</option>
+        <option>ニキビ混合型</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>パスワード</label>
+      <input type="password" id="regPassword" placeholder="8文字以上">
+    </div>
+    <button class="btn-submit" onclick="handleRegister()">無料で登録する</button>
+    <p class="modal-switch">すでにアカウントをお持ちの方は <a onclick="switchModal('registerModal','loginModal')">ログイン</a></p>
+  </div>
+</div>
+
+<!-- ============ POST MODAL ============ -->
+<div class="modal-overlay" id="postModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('postModal')">×</button>
+    <h2>レビューを投稿する ✍️</h2>
+    <p class="subtitle">あなたの体験を敏感肌の仲間にシェアしましょう</p>
+    <div class="form-group">
+      <label>商品名</label>
+      <input type="text" id="postProduct" placeholder="例：しっとり化粧水 センシティブ">
+    </div>
+    <div class="form-group">
+      <label>ブランド名</label>
+      <input type="text" id="postBrand" placeholder="例：hada labo, FANCL など">
+    </div>
+    <div class="form-group">
+      <label>総合評価</label>
+      <div class="star-rating" id="starRating">
+        <span onclick="setRating(1)">★</span>
+        <span onclick="setRating(2)">★</span>
+        <span onclick="setRating(3)">★</span>
+        <span onclick="setRating(4)">★</span>
+        <span onclick="setRating(5)">★</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>レビュー本文</label>
+      <textarea id="postText" placeholder="使用感、効果、敏感肌への影響などを詳しく教えてください..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>商品画像（任意）</label>
+      <div class="image-upload-area" onclick="document.getElementById('imageInput').click()">
+        <div class="upload-icon">📸</div>
+        <p>クリックして画像を選択（複数可）</p>
+      </div>
+      <input type="file" id="imageInput" accept="image/*" multiple style="display:none" onchange="previewImages(this)">
+      <div class="image-preview" id="imagePreview"></div>
+    </div>
+    <button class="btn-submit" onclick="handlePost()">投稿する</button>
+  </div>
+</div>
+
+<!-- ============ ARTICLE MODAL ============ -->
+<div class="modal-overlay" id="articleModal">
+  <div class="modal" style="max-width:560px">
+    <button class="modal-close" onclick="closeModal('articleModal')">×</button>
+    <h2>記事を投稿する 📝</h2>
+    <p class="subtitle">敏感肌の仲間に役立つ情報を書いて共有しましょう</p>
+    <div class="form-group">
+      <label>タイトル</label>
+      <input type="text" id="articleTitle" placeholder="例：乾燥敏感肌が1ヶ月試したルーティンまとめ">
+    </div>
+    <div class="form-group">
+      <label>カテゴリ</label>
+      <select id="articleCategory">
+        <option value="">選択してください</option>
+        <option>成分ガイド</option>
+        <option>ルーティン・ケア方法</option>
+        <option>季節ケア</option>
+        <option>基礎知識</option>
+        <option>体験談・レポート</option>
+        <option>ブランド・商品紹介</option>
+        <option>Q&amp;A・悩み相談</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>カバー画像（任意）</label>
+      <div class="image-upload-area" onclick="document.getElementById('articleImageInput').click()">
+        <div class="upload-icon">🖼️</div>
+        <p>クリックしてカバー画像を選択</p>
+      </div>
+      <input type="file" id="articleImageInput" accept="image/*" style="display:none" onchange="previewArticleImage(this)">
+      <div id="articleImagePreview" style="margin-top:0.8rem"></div>
+    </div>
+    <div class="form-group">
+      <label>本文</label>
+      <textarea id="articleBody" style="min-height:160px" placeholder="記事の内容を書いてください。&#10;&#10;【見出し例】&#10;## はじめに&#10;## 使用した商品&#10;## 結果・感想&#10;&#10;マークダウン形式で書くと読みやすくなります。"></textarea>
+    </div>
+    <div class="form-group">
+      <label>タグ（任意・カンマ区切り）</label>
+      <input type="text" id="articleTags" placeholder="例：乾燥肌, セラミド, 冬ケア">
+    </div>
+    <button class="btn-submit" onclick="handleArticlePost()">記事を投稿する</button>
+  </div>
+</div>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero-blob"></div>
+  <div class="hero-text">
+    <span class="hero-tag">sensitive skin community</span>
+    <h1>
+      敏感肌の<em>リアルな声</em>が、<br>
+      あなたを<em>守る。</em>
+    </h1>
+    <p>スキンケア選びに悩む敏感肌の方へ。実際に試した人のレビューと情報が集まるコミュニティサイトです。あなたの経験も、誰かの助けになります。</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="openModal('registerModal')">無料で参加する</button>
+      <a href="#reviews" class="btn-outline">レビューを見る</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-stats">
+      <div class="stat-card fade-in">
+        <div>
+          <span class="num">2,847</span>
+          <span class="label">登録ユーザー数</span>
+        </div>
+      </div>
+      <div class="stat-card fade-in" style="transition-delay:0.1s">
+        <span class="num">1,204</span>
+        <span class="label">商品レビュー</span>
+      </div>
+      <div class="stat-card fade-in" style="transition-delay:0.2s">
+        <span class="num">386</span>
+        <span class="label">掲載ブランド</span>
+      </div>
+      <div class="stat-card fade-in" style="transition-delay:0.3s">
+        <span class="num">4.8</span>
+        <span class="label">平均満足度</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LATEST REVIEWS ============ -->
+<section class="section-wrap reviews-section" id="reviews">
+  <div class="section-header">
+    <div>
+      <p class="section-label">latest reviews</p>
+      <h2 class="section-title">新着レビュー</h2>
+    </div>
+    <a href="#" class="see-all">すべて見る →</a>
+  </div>
+  <div class="reviews-grid" id="reviewsGrid"></div>
+</section>
+
+<!-- ============ PRODUCTS ============ -->
+<section class="section-wrap products-section" id="products">
+  <div class="section-header">
+    <div>
+      <p class="section-label">top products</p>
+      <h2 class="section-title">人気スキンケア商品</h2>
+    </div>
+    <a href="#" class="see-all">すべて見る →</a>
+  </div>
+  <div class="filter-tabs" id="filterTabs">
+    <button class="filter-tab active" onclick="filterProducts('all',this)">すべて</button>
+    <button class="filter-tab" onclick="filterProducts('化粧水',this)">化粧水</button>
+    <button class="filter-tab" onclick="filterProducts('保湿クリーム',this)">保湿クリーム</button>
+    <button class="filter-tab" onclick="filterProducts('洗顔',this)">洗顔</button>
+    <button class="filter-tab" onclick="filterProducts('美容液',this)">美容液</button>
+    <button class="filter-tab" onclick="filterProducts('日焼け止め',this)">日焼け止め</button>
+  </div>
+  <div class="products-grid" id="productsGrid"></div>
+</section>
+
+<!-- ============ ARTICLES ============ -->
+<section class="section-wrap articles-section" id="articles">
+  <div class="section-header">
+    <div>
+      <p class="section-label">featured articles</p>
+      <h2 class="section-title">敏感肌のための記事</h2>
+    </div>
+    <a href="#" class="see-all" style="color:var(--dusty-rose)">すべて見る →</a>
+  </div>
+  <div class="articles-grid" id="articlesGrid"></div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section-wrap faq-section" id="faq">
+  <div class="section-header">
+    <div>
+      <p class="section-label">frequently asked questions</p>
+      <h2 class="section-title">よくある質問</h2>
+    </div>
+  </div>
+  <div class="faq-grid" id="faqGrid"></div>
+</section>
+
+<!-- ============ POST CTA ============ -->
+<section class="section-wrap post-cta">
+  <p class="section-label">share your experience</p>
+  <h2 class="section-title fade-in">あなたの経験が、<br>誰かを助けます。</h2>
+  <p class="fade-in">敏感肌の悩みを持つ人たちに、リアルな使用感を届けましょう。あなたのレビューがコミュニティを支えます。</p>
+  <div class="fade-in">
+    <button class="btn-primary" onclick="checkLoginForPost('review')">✍️ レビューを投稿する</button>
+    <button class="btn-outline" onclick="checkLoginForPost('article')" style="margin-left:1rem">📝 記事を投稿する</button>
+  </div>
+</section>
+
+<!-- ============ ARTICLE DETAIL MODAL ============ -->
+<div class="modal-overlay" id="articleDetailModal">
+  <div class="modal">
+    <div class="article-detail-header">
+      <button class="article-detail-close" onclick="closeModal('articleDetailModal')">×</button>
+      <div class="article-detail-tag" id="adTag">成分ガイド</div>
+      <h2 id="adTitle">記事タイトル</h2>
+      <div class="article-detail-meta">
+        <div class="article-author-row">
+          <div class="avatar" id="adAuthorAvatar">H</div>
+          <span class="name" id="adAuthor">HADAERU編集部</span>
+        </div>
+        <span class="article-detail-date" id="adDate">2026.02.22</span>
+        <span style="font-size:0.72rem;color:rgba(255,255,255,0.35)" id="adReadTime">読了 約3分</span>
+      </div>
+    </div>
+    <div class="article-detail-body">
+      <div class="article-content" id="adContent"></div>
+      <div class="article-comments-section">
+        <h4 id="adCommentTitle">💬 コメント (0)</h4>
+        <div id="adCommentsList"></div>
+        <div class="comment-form">
+          <textarea id="adCommentInput" placeholder="コメントを書く..."></textarea>
+          <button class="btn-comment-send" onclick="postArticleComment()">送信</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PRODUCT DETAIL MODAL ============ -->
+<div class="modal-overlay" id="productDetailModal">
+  <div class="modal">
+    <div class="product-detail-header" id="productDetailHeader">
+      <button class="product-detail-close" onclick="closeModal('productDetailModal')">×</button>
+      <div class="product-detail-emoji" id="detailEmoji">🧴</div>
+      <div>
+        <p class="product-detail-brand" id="detailBrand">BRAND</p>
+        <h2 id="detailName">商品名</h2>
+        <div class="product-detail-rating-row">
+          <span class="stars" id="detailStars">★★★★★</span>
+          <span class="score" id="detailScore">4.8</span>
+          <span class="count" id="detailCount">(312件のレビュー)</span>
+        </div>
+        <div class="product-tags" style="margin-top:0.6rem" id="detailTags"></div>
+      </div>
+    </div>
+    <div class="product-detail-body">
+      <!-- Rating Breakdown -->
+      <div class="rating-breakdown">
+        <h4>評価の内訳</h4>
+        <div id="ratingBars"></div>
+      </div>
+      <!-- Ingredients -->
+      <div class="ingredients-section-detail">
+        <h4>🔬 主な成分</h4>
+        <div class="ingredient-badges" id="detailIngredients"></div>
+      </div>
+      <!-- Reviews -->
+      <div>
+        <div class="detail-reviews-header">
+          <h4>💬 みんなのレビュー</h4>
+          <button class="btn-write-review" onclick="closeModal('productDetailModal');checkLoginForPost('review')">✍️ レビューを書く</button>
+        </div>
+        <div id="detailReviewsList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <a href="#" class="nav-logo">
+    HADAERU
+    <small>sensitive skin community</small>
+  </a>
+  <p>© 2026 HADAERU — 敏感肌コミュニティサイト</p>
+  <p>※ このサイトの情報は医療的なアドバイスではありません</p>
+</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ===================== SUPABASE INIT =====================
+const SUPABASE_URL = 'https://wstsposcftyudeuudwod.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndzdHNwb3NjZnR5dWRldXVkd29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxODg2ODgsImV4cCI6MjA4Nzc2NDY4OH0.dpX0J3LGlFX8b7MNgW0cFUT9YcwyQleE8Bsgk8sOSHA';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ===================== DATA（ローカルフォールバック用） =====================
+const dummyReviews = [
+  { id:1, product:"ハトムギ化粧水 200ml", brand:"hada labo", rating:5, text:"敏感肌でも全くヒリヒリしません！使い始めて1週間で明らかに肌の乾燥が改善されました。コスパも最高で毎日たっぷり使えるのが嬉しいです。", author:"さくら", date:"2026.02.20", emoji:"🧴", tags:["化粧水","保湿"] },
+  { id:2, product:"極潤プレミアムヒアルロン液", brand:"hada labo", rating:4, text:"テクスチャーが少しとろみがあって肌にしっかり密着します。香料不使用で敏感肌に優しい。もう少しさっぱりしていると嬉しいかな。", author:"みく", date:"2026.02.19", emoji:"💧", tags:["化粧水","ヒアルロン酸"] },
+  { id:3, product:"セラミド保湿クリーム", brand:"CeraVe", rating:5, text:"海外製品ですが成分表示がシンプルで安心。セラミドがしっかり配合されていてバリア機能が目に見えて改善。冬の乾燥でもしっとり保てます。", author:"ゆい", date:"2026.02.18", emoji:"🍶", tags:["保湿クリーム","セラミド"] },
+];
+
+const dummyProducts = [
+  { id:1, name:"ハトムギ化粧水 200ml", brand:"hada labo", category:"化粧水", rating:4.8, reviews:312, emoji:"🧴", tags:["無香料","無着色","低刺激"],
+    ratingDist:[180,80,35,12,5], ingredients:[{name:"ヒアルロン酸Na",good:true},{name:"グリセリン",good:true},{name:"ハトムギエキス",good:true},{name:"BG",good:false},{name:"フェノキシエタノール",good:false}],
+    detailReviews:[
+      {author:"さくら",rating:5,text:"敏感肌でも全くヒリヒリしません！1週間で乾燥が改善されました。コスパ最高でたっぷり使えます。",date:"2026.02.20"},
+      {author:"ひなた",rating:5,text:"肌荒れしやすい私でも問題なく使えています。朝晩使っていますが刺激ゼロ。リピ確定です！",date:"2026.02.15"},
+      {author:"みお",rating:4,text:"さっぱりしているのに保湿力は十分。夏でも使いやすいテクスチャーが好きです。",date:"2026.02.10"},
+    ]},
+  { id:2, name:"極潤プレミアムヒアルロン液", brand:"hada labo", category:"化粧水", rating:4.6, reviews:241, emoji:"💧", tags:["ヒアルロン酸","無添加"],
+    ratingDist:[130,70,28,9,4], ingredients:[{name:"ヒアルロン酸Na",good:true},{name:"加水分解ヒアルロン酸",good:true},{name:"グリセリン",good:true},{name:"EDTA-2Na",good:false}],
+    detailReviews:[
+      {author:"みく",rating:4,text:"とろみがあって肌に密着する感じ。香料不使用で安心です。もう少しさっぱりだと嬉しい。",date:"2026.02.19"},
+      {author:"ゆい",rating:5,text:"乾燥がひどい冬でもこれ一本でかなり潤います！敏感肌の友人にも薦めました。",date:"2026.02.05"},
+    ]},
+  { id:3, name:"セラミド保湿クリーム", brand:"CeraVe", category:"保湿クリーム", rating:4.9, reviews:188, emoji:"🍶", tags:["セラミド","医薬部外品"],
+    ratingDist:[160,20,5,2,1], ingredients:[{name:"セラミドNP",good:true},{name:"セラミドAP",good:true},{name:"ヒアルロン酸Na",good:true},{name:"ナイアシンアミド",good:true},{name:"カルボマー",good:false}],
+    detailReviews:[
+      {author:"ゆい",rating:5,text:"海外製品ですが成分表示がシンプルで安心。バリア機能が目に見えて改善。冬も乾燥知らず。",date:"2026.02.18"},
+      {author:"れん",rating:5,text:"皮膚科の先生に勧められて購入。本当に肌が落ち着いてきました。医薬部外品なので安心感があります。",date:"2026.02.12"},
+    ]},
+  { id:4, name:"敏感肌用洗顔フォーム", brand:"FANCL", category:"洗顔", rating:4.7, reviews:204, emoji:"🫧", tags:["弱酸性","無添加"],
+    ratingDist:[140,45,12,5,2], ingredients:[{name:"アミノ酸系界面活性剤",good:true},{name:"グリセリン",good:true},{name:"アロエベラ",good:true},{name:"フェノキシエタノール",good:false}],
+    detailReviews:[
+      {author:"あおい",rating:5,text:"泡立ちがきめ細かくて洗い上がりもしっとり。今まで使った洗顔の中で一番刺激が少ないです。",date:"2026.02.16"},
+      {author:"こと",rating:4,text:"無添加でこの洗浄力はすごい。量が少し少ない気もするけどコスパは許容範囲。",date:"2026.02.08"},
+    ]},
+  { id:5, name:"ナイアシンアミド美容液 10%", brand:"The Ordinary", category:"美容液", rating:4.5, reviews:156, emoji:"✨", tags:["ナイアシンアミド","美白"],
+    ratingDist:[100,35,13,6,2], ingredients:[{name:"ナイアシンアミド 10%",good:true},{name:"亜鉛 1%",good:true},{name:"ペンチレングリコール",good:false},{name:"キサンタンガム",good:false}],
+    detailReviews:[
+      {author:"はる",rating:5,text:"毛穴が目立たなくなりました！最初は少しヒリヒリしましたが今は問題なし。コスパ最強。",date:"2026.02.17"},
+      {author:"なな",rating:4,text:"赤みが少し落ち着いてきた気がします。即効性はないけど長期使用で効果を実感。",date:"2026.02.03"},
+    ]},
+  { id:6, name:"ノンケミカル日焼け止め SPF50", brand:"Biore UV", category:"日焼け止め", rating:4.4, reviews:178, emoji:"☀️", tags:["ノンケミカル","敏感肌向け"],
+    ratingDist:[95,50,20,9,4], ingredients:[{name:"酸化亜鉛",good:true},{name:"酸化チタン",good:true},{name:"グリセリン",good:true},{name:"エタノール",good:false}],
+    detailReviews:[
+      {author:"さや",rating:4,text:"化学フィルター不使用なので敏感肌でも安心。ただ白浮きが少し気になるかも。",date:"2026.02.14"},
+      {author:"まい",rating:5,text:"子供にも使えるくらい優しい処方。SPF50なのに軽くて使いやすいです。",date:"2026.01.28"},
+    ]},
+  { id:7, name:"センシティブモイスチャーライザー", brand:"Aveeno", category:"保湿クリーム", rating:4.6, reviews:134, emoji:"🌿", tags:["天然成分","無香料"],
+    ratingDist:[90,30,10,3,1], ingredients:[{name:"コロイドオートミール",good:true},{name:"グリセリン",good:true},{name:"パントテン酸",good:true},{name:"ジメチコン",good:false}],
+    detailReviews:[
+      {author:"つき",rating:5,text:"アトピー気味の肌でも使えました。ベタつかないのにしっかり保湿されます。",date:"2026.02.11"},
+    ]},
+  { id:8, name:"アミノ酸洗顔クリーム", brand:"Kiehl's", category:"洗顔", rating:4.3, reviews:98, emoji:"🌸", tags:["アミノ酸","低刺激"],
+    ratingDist:[55,25,12,4,2], ingredients:[{name:"アミノ酸系界面活性剤",good:true},{name:"アロエベラ",good:true},{name:"カリウムPCA",good:true},{name:"香料",good:false}],
+    detailReviews:[
+      {author:"りん",rating:4,text:"香りが少しするので100点ではないけど、洗い上がりのしっとり感は格別。リッチな気分になれます。",date:"2026.02.09"},
+    ]},
+];
+
+const dummyArticles = [
+  { id:1, title:"敏感肌が避けるべき成分10選 — 知らないと怖い化粧品の落とし穴", tag:"成分ガイド", date:"2026.02.22", emoji:"🔬", featured:true,
+    author:"HADAERU編集部", readTime:5,
+    body:`<h3>なぜ成分チェックが重要なのか</h3>
+<p>敏感肌の方にとって、化粧品の成分選びは肌トラブルを防ぐうえで最も重要なステップです。「よかれと思って使った」ケア用品が、逆に炎症や乾燥の原因になることがあります。</p>
+<div class="highlight-box"><p>💡 成分表示は含有量の多い順に記載されています。最初の5成分が製品の80〜90%を占めることを念頭に置きましょう。</p></div>
+<h3>避けるべき成分 TOP5</h3>
+<ul>
+<li><strong>合成香料（Parfum / Fragrance）</strong> — アレルギーの原因No.1。「無香料」表示を選びましょう。</li>
+<li><strong>エタノール（アルコール）</strong> — 揮発時に肌の水分を奪い、バリア機能を低下させます。</li>
+<li><strong>硫酸塩系界面活性剤（SLS・SLES）</strong> — 洗浄力が強すぎて、必要な皮脂まで除去してしまいます。</li>
+<li><strong>パラベン類</strong> — 防腐剤として広く使われますが、接触性皮膚炎の原因になることがあります。</li>
+<li><strong>鉱物油（Mineral Oil）</strong> — 毛穴を塞ぎやすく、ニキビ肌と敏感肌の組み合わせには注意が必要です。</li>
+</ul>
+<h3>代わりに選びたい成分</h3>
+<p>避けるだけでなく、積極的に取り入れたい成分も知っておくと選択の幅が広がります。セラミド・ヒアルロン酸・グリセリン・ナイアシンアミドは敏感肌との相性が良いことが知られています。</p>
+<p>次回のお買い物では、ぜひ成分表の最初の5〜10成分をチェックしてみてください。それだけで、肌に合わないアイテムの大半を事前に見分けることができます。</p>`,
+    comments:[
+      {author:"さくら",text:"これ読んでから成分チェックするようになりました！香料入りを避けたら赤みが減りました。",date:"2026.02.23"},
+      {author:"みく",text:"SLSって知らなかった…洗顔料のパッケージ見直してみます。",date:"2026.02.24"},
+    ]},
+  { id:2, title:"セラミドとは？敏感肌のバリア機能を守る仕組みを解説", tag:"基礎知識", date:"2026.02.20", emoji:"🧬", featured:false,
+    author:"HADAERU編集部", readTime:4,
+    body:`<h3>セラミドの役割とは</h3>
+<p>セラミドは皮膚の角質層に存在する脂質で、肌細胞と細胞をつなぐ「モルタル」のような役割を担っています。この成分が豊富だと外部刺激をブロックし、内部の水分をキープしてくれます。</p>
+<div class="highlight-box"><p>🔬 健康な肌のセラミド含有量は約40〜50%。敏感肌の方はこの数値が低い傾向にあります。</p></div>
+<h3>セラミドの種類と選び方</h3>
+<p>セラミドには複数の種類があり、それぞれ異なる役割を持ちます。化粧品に含まれる主なものは以下の通りです。</p>
+<ul>
+<li><strong>セラミドNP（セラミド3）</strong> — 最も一般的。保湿力に優れています。</li>
+<li><strong>セラミドAP（セラミド6II）</strong> — ターンオーバーをサポートし、肌のキメを整えます。</li>
+<li><strong>セラミドEOP（セラミド1）</strong> — バリア機能の維持に特に重要な成分です。</li>
+</ul>
+<h3>どんな製品に入っている？</h3>
+<p>セラミド配合の製品を選ぶ際は、成分表示で「セラミドNP」「セラミドAP」「セラミドEOP」などの記載を確認しましょう。「セラミド様成分」や「擬似セラミド」は構造が異なるため、効果にも違いがあります。</p>`,
+    comments:[
+      {author:"ゆい",text:"種類があるって知りませんでした！製品に複数入ってたほうがいいんですね。",date:"2026.02.21"},
+    ]},
+  { id:3, title:"春の花粉シーズンに備える！敏感肌のための季節ケア", tag:"季節ケア", date:"2026.02.18", emoji:"🌸", featured:false,
+    author:"HADAERU編集部", readTime:3,
+    body:`<h3>花粉と敏感肌の関係</h3>
+<p>春になると花粉が肌に付着し、バリア機能が低下している敏感肌では炎症反応が起きやすくなります。目元・口元・首元に赤みやかゆみが出るのはこのためです。</p>
+<div class="highlight-box"><p>🌿 花粉シーズン前の2〜3週間からバリアケアを強化しておくと、シーズン中の肌トラブルを大幅に減らせます。</p></div>
+<h3>春のスキンケア3か条</h3>
+<ul>
+<li><strong>洗顔を丁寧に</strong> — 帰宅後は花粉を残さないよう、ぬるま湯でしっかりすすぎます。</li>
+<li><strong>保湿を増やす</strong> — セラミド・ヒアルロン酸配合の化粧水を重ねて、バリアを補強。</li>
+<li><strong>摩擦を避ける</strong> — タオルでゴシゴシせず、押さえるようにやさしく水分を取りましょう。</li>
+</ul>
+<p>春は楽しい季節ですが、敏感肌には試練の時期でもあります。早めの対策で快適に過ごしましょう！</p>`,
+    comments:[]},
+];
+
+const dummyFaq = [
+  { q:"敏感肌かどうか判断する方法は？", a:"洗顔後15〜20分後に赤みやかゆみ、突っ張り感が出る場合は敏感肌の可能性があります。自己判断が難しい場合は皮膚科を受診されることをおすすめします。" },
+  { q:"化粧水と乳液はどちらを先に使うべき？", a:"基本的には化粧水（水分補給）→乳液（油分で蓋をする）の順番です。敏感肌の場合は少ない工程でシンプルにまとめることも大切です。" },
+  { q:"スキンケアで「無添加」と書かれていれば安全ですか？", a:"「無添加」の定義は法律で決まっていないため、メーカーにより異なります。成分表を確認し、アレルゲンとなりやすい香料・着色料・防腐剤の有無をチェックしましょう。" },
+  { q:"パッチテストのやり方を教えてください", a:"二の腕の内側に少量を塗布し、24〜48時間様子を見ます。赤み・かゆみ・腫れがなければ顔への使用に進んでください。必ず洗い流せる状態で行いましょう。" },
+  { q:"洗顔のしすぎが敏感肌の原因になりますか？", a:"はい、なります。過度な洗顔は皮膚の常在菌や必要な皮脂を除去し、バリア機能を低下させます。朝はぬるま湯洗顔のみにする方法も有効です。" },
+  { q:"口コミやレビューはどこで信頼できる情報を得られますか？", a:"当サイトHADAERUでは実際の敏感肌ユーザーのリアルな使用感を投稿していただいています。肌タイプを明記したレビューを参考にすることで、より自分に合った情報が見つかります。" },
+];
+
+// Search data pool
+const searchData = [
+  ...dummyProducts.map(p => ({ label:p.name, sub:p.brand, type:'product' })),
+  { label:'hada labo', sub:'ブランド', type:'brand' },
+  { label:'CeraVe', sub:'ブランド', type:'brand' },
+  { label:'FANCL', sub:'ブランド', type:'brand' },
+  { label:'The Ordinary', sub:'ブランド', type:'brand' },
+  ...dummyArticles.map(a => ({ label:a.title.substring(0,30)+'...', sub:a.tag, type:'article' })),
+];
+
+// ===================== STATE =====================
+let currentUser = null;
+let currentRating = 0;
+let allReviews = [...dummyReviews];
+
+// ===================== RENDER =====================
+function renderReviews(reviews) {
+  const grid = document.getElementById('reviewsGrid');
+  grid.innerHTML = reviews.map(r => `
+    <div class="review-card fade-in">
+      <div class="review-card-img">${r.emoji || '🌸'}</div>
+      <div class="review-card-body">
+        <p class="review-product-name">${r.brand}</p>
+        <h3>${r.product}</h3>
+        <div class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+        <p class="review-text">${r.text}</p>
+        <div class="review-footer">
+          <div class="avatar">${r.author[0]}</div>
+          <span class="reviewer-name">${r.author}</span>
+          <span class="review-date">${r.date}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  observeAll();
+}
+
+function renderProducts(products) {
+  const grid = document.getElementById('productsGrid');
+  grid.innerHTML = products.map(p => `
+    <div class="product-card fade-in" onclick="openProductDetail(${p.id})">
+      <div class="product-img">${p.emoji}</div>
+      <div class="product-body">
+        <p class="product-brand">${p.brand}</p>
+        <h4>${p.name}</h4>
+        <div class="product-rating">
+          <span class="stars">${'★'.repeat(Math.round(p.rating))}${'☆'.repeat(5-Math.round(p.rating))}</span>
+          <span class="score">${p.rating}</span>
+          <span class="count">(${p.reviews}件)</span>
+        </div>
+        <div class="product-tags">
+          <span class="product-tag">${p.category}</span>
+          ${p.tags.map(t=>`<span class="product-tag">${t}</span>`).join('')}
+        </div>
+        <p style="font-size:0.72rem;color:var(--dusty-rose);margin-top:0.6rem;letter-spacing:0.05em">詳細を見る →</p>
+      </div>
+    </div>
+  `).join('');
+  observeAll();
+}
+
+function openProductDetail(id) {
+  const p = dummyProducts.find(p => p.id === id);
+  if (!p) return;
+
+  document.getElementById('detailEmoji').textContent = p.emoji;
+  document.getElementById('detailBrand').textContent = p.brand;
+  document.getElementById('detailName').textContent = p.name;
+  document.getElementById('detailStars').textContent = '★'.repeat(Math.round(p.rating)) + '☆'.repeat(5-Math.round(p.rating));
+  document.getElementById('detailScore').textContent = p.rating;
+  document.getElementById('detailCount').textContent = `(${p.reviews}件のレビュー)`;
+  document.getElementById('detailTags').innerHTML = p.tags.map(t=>`<span class="product-tag">${t}</span>`).join('');
+
+  // Rating bars
+  const total = p.ratingDist.reduce((a,b)=>a+b,0);
+  document.getElementById('ratingBars').innerHTML = [5,4,3,2,1].map((star,i) => {
+    const count = p.ratingDist[i];
+    const pct = total > 0 ? Math.round(count/total*100) : 0;
+    return `<div class="rating-bar-row">
+      <span class="rating-bar-label">${star}★</span>
+      <div class="rating-bar-track"><div class="rating-bar-fill" style="width:${pct}%"></div></div>
+      <span class="rating-bar-count">${count}</span>
+    </div>`;
+  }).join('');
+
+  // Ingredients
+  document.getElementById('detailIngredients').innerHTML = p.ingredients.map(ing =>
+    `<span class="ing-badge ${ing.good?'good':'neutral'}">${ing.good?'✓ ':''}${ing.name}</span>`
+  ).join('');
+
+  // Reviews
+  const reviews = p.detailReviews || [];
+  document.getElementById('detailReviewsList').innerHTML = reviews.length ? reviews.map(r => `
+    <div class="detail-review-item">
+      <div class="detail-review-top">
+        <div class="avatar">${r.author[0]}</div>
+        <span class="name">${r.author}</span>
+        <span class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
+        <span class="date">${r.date}</span>
+      </div>
+      <p class="detail-review-text">${r.text}</p>
+    </div>
+  `).join('') : '<p style="font-size:0.85rem;color:var(--mid-gray);text-align:center;padding:1.5rem 0">まだレビューがありません。最初のレビューを書きましょう！</p>';
+
+  openModal('productDetailModal');
+}
+
+function renderArticles() {
+  const grid = document.getElementById('articlesGrid');
+  grid.innerHTML = dummyArticles.map((a,i) => `
+    <div class="article-card ${a.featured?'featured':''} fade-in" style="transition-delay:${i*0.1}s;cursor:pointer" onclick="openArticleDetail(${a.id})">
+      <div class="article-img">${a.emoji}</div>
+      <div class="article-body">
+        <p class="article-tag">${a.tag}</p>
+        <h3>${a.title}</h3>
+        <p class="article-meta">${a.date}${a.readTime ? ' · 読了 約'+a.readTime+'分' : ''}</p>
+      </div>
+    </div>
+  `).join('');
+  observeAll();
+}
+
+function openArticleDetail(id) {
+  const a = dummyArticles.find(a => a.id === id);
+  if (!a) return;
+
+  document.getElementById('adTag').textContent = a.tag;
+  document.getElementById('adTitle').textContent = a.title;
+  document.getElementById('adDate').textContent = a.date;
+  document.getElementById('adReadTime').textContent = a.readTime ? '読了 約'+a.readTime+'分' : '';
+  const authorName = a.author || 'HADAERU編集部';
+  document.getElementById('adAuthor').textContent = authorName;
+  document.getElementById('adAuthorAvatar').textContent = authorName[0];
+  document.getElementById('adContent').innerHTML = a.body || '<p style="color:var(--mid-gray)">本文がありません。</p>';
+
+  // Comments
+  const comments = a.comments || [];
+  renderArticleComments(comments, a.id);
+
+  openModal('articleDetailModal');
+  // Store current article id for comment posting
+  document.getElementById('articleDetailModal').dataset.articleId = id;
+}
+
+function renderArticleComments(comments, articleId) {
+  document.getElementById('adCommentTitle').textContent = `💬 コメント (${comments.length})`;
+  document.getElementById('adCommentsList').innerHTML = comments.length ? comments.map(c => `
+    <div class="comment-item">
+      <div class="avatar" style="width:32px;height:32px;font-size:0.8rem;flex-shrink:0">${c.author[0]}</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">${c.author}</span>
+          <span class="comment-date">${c.date}</span>
+        </div>
+        <p class="comment-text">${c.text}</p>
+      </div>
+    </div>
+  `).join('') : '<p style="font-size:0.83rem;color:var(--mid-gray);padding:0.5rem 0">まだコメントがありません。最初のコメントを書いてみましょう！</p>';
+}
+
+function postArticleComment() {
+  if (!currentUser) { showToast('⚠️ コメントにはログインが必要です', 'error'); return; }
+  const text = document.getElementById('adCommentInput').value.trim();
+  if (!text) { showToast('⚠️ コメントを入力してください', 'error'); return; }
+
+  const id = parseInt(document.getElementById('articleDetailModal').dataset.articleId);
+  const article = dummyArticles.find(a => a.id === id);
+  if (!article) return;
+  if (!article.comments) article.comments = [];
+
+  const newComment = {
+    author: currentUser.name,
+    text,
+    date: new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\//g,'.')
+  };
+  article.comments.push(newComment);
+  renderArticleComments(article.comments, id);
+  document.getElementById('adCommentInput').value = '';
+  showToast('💬 コメントを投稿しました！', 'success');
+}
+
+function renderFaq() {
+  const grid = document.getElementById('faqGrid');
+  grid.innerHTML = dummyFaq.map((f,i) => `
+    <div class="faq-item fade-in" style="transition-delay:${i*0.07}s">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-text">Q. ${f.q}</span>
+        <span class="faq-toggle">＋</span>
+      </div>
+      <div class="faq-a">A. ${f.a}</div>
+    </div>
+  `).join('');
+  observeAll();
+}
+
+function toggleFaq(el) {
+  el.parentElement.classList.toggle('open');
+}
+
+function filterProducts(category, btn) {
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = category === 'all' ? dummyProducts : dummyProducts.filter(p => p.category === category);
+  renderProducts(filtered);
+}
+
+// ===================== SEARCH =====================
+const searchInput = document.getElementById('searchInput');
+const searchDropdown = document.getElementById('searchDropdown');
+
+searchInput.addEventListener('input', function() {
+  const q = this.value.trim().toLowerCase();
+  if (!q) { searchDropdown.classList.remove('show'); return; }
+  const results = searchData.filter(d =>
+    d.label.toLowerCase().includes(q) || d.sub.toLowerCase().includes(q)
+  ).slice(0, 6);
+  if (!results.length) { searchDropdown.classList.remove('show'); return; }
+  const typeLabel = { product:'商品', brand:'ブランド', article:'記事' };
+  const typeClass = { product:'type-product', brand:'type-brand', article:'type-article' };
+  searchDropdown.innerHTML = results.map(r => `
+    <div class="search-result-item" onclick="selectSearch('${r.label.replace(/'/g,"\\'")}')">
+      <span class="result-type ${typeClass[r.type]}">${typeLabel[r.type]}</span>
+      <span>${r.label}</span>
+      <small style="color:#bbb;margin-left:auto">${r.sub}</small>
+    </div>
+  `).join('');
+  searchDropdown.classList.add('show');
+});
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.nav-search')) searchDropdown.classList.remove('show');
+});
+
+function selectSearch(label) {
+  searchInput.value = label;
+  searchDropdown.classList.remove('show');
+  showToast('🔍 「'+label+'」を検索しました', 'success');
+}
+
+// ===================== AUTH (SUPABASE) =====================
+async function handleLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pw = document.getElementById('loginPassword').value;
+  if (!email || !pw) { showToast('⚠️ メールアドレスとパスワードを入力してください', 'error'); return; }
+  showToast('⏳ ログイン中...', 'success');
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
+  if (error) { showToast('⚠️ メールアドレスまたはパスワードが違います', 'error'); return; }
+  await loadUserProfile(data.user);
+  closeModal('loginModal');
+  showToast('🌸 ログインしました！ようこそ', 'success');
+}
+
+async function handleRegister() {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const skin = document.getElementById('regSkinType').value;
+  const pw = document.getElementById('regPassword').value;
+  if (!name || !email || !skin || !pw) { showToast('⚠️ すべての項目を入力してください', 'error'); return; }
+  if (pw.length < 8) { showToast('⚠️ パスワードは8文字以上で設定してください', 'error'); return; }
+  showToast('⏳ 登録中...', 'success');
+  const { data, error } = await sb.auth.signUp({ email, password: pw });
+  if (error) { showToast('⚠️ ' + error.message, 'error'); return; }
+  if (data.user) {
+    await sb.from('profiles').upsert({ id: data.user.id, name, skin_type: skin });
+    await loadUserProfile(data.user);
+  }
+  closeModal('registerModal');
+  showToast('🎉 登録完了！HADAERUへようこそ、' + name + 'さん', 'success');
+}
+
+async function loadUserProfile(user) {
+  const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
+  const name = profile?.name || user.email.split('@')[0];
+  currentUser = { id: user.id, name, email: user.email, skin: profile?.skin_type };
+  document.getElementById('userAvatarNav').textContent = name[0];
+  document.getElementById('userNameNav').textContent = name + 'さん';
+  document.getElementById('navAuthBtns').style.display = 'none';
+  document.getElementById('userMenu').classList.add('show');
+}
+
+async function logout() {
+  await sb.auth.signOut();
+  currentUser = null;
+  document.getElementById('navAuthBtns').style.display = 'flex';
+  document.getElementById('userMenu').classList.remove('show');
+  showToast('またね！ログアウトしました', 'success');
+}
+
+sb.auth.getSession().then(async ({ data: { session } }) => {
+  if (session?.user) await loadUserProfile(session.user);
+});
+
+function checkLoginForPost(type) {
+  if (!currentUser) { openModal('loginModal'); return; }
+  if (type === 'article') openModal('articleModal');
+  else openModal('postModal');
+}
+
+function togglePostDropdown() {
+  const d = document.getElementById('postDropdown');
+  d.style.display = d.style.display === 'none' ? 'block' : 'none';
+}
+function closePostDropdown() {
+  document.getElementById('postDropdown').style.display = 'none';
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.post-dropdown-wrap')) closePostDropdown();
+});
+
+// ===================== ARTICLE POST (SUPABASE) =====================
+function previewArticleImage(input) {
+  const preview = document.getElementById('articleImagePreview');
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    preview.innerHTML = `<img src="${e.target.result}" style="width:100%;max-height:160px;object-fit:cover;border-radius:10px;border:1px solid var(--light-border)">`;
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+async function handleArticlePost() {
+  if (!currentUser) { showToast('⚠️ ログインが必要です', 'error'); return; }
+  const title = document.getElementById('articleTitle').value.trim();
+  const category = document.getElementById('articleCategory').value;
+  const body = document.getElementById('articleBody').value.trim();
+  if (!title || !category || !body) { showToast('⚠️ タイトル・カテゴリ・本文は必須です', 'error'); return; }
+  showToast('⏳ 投稿中...', 'success');
+  const emojiMap = { '成分ガイド':'🔬', 'ルーティン・ケア方法':'🌿', '季節ケア':'🌸', '基礎知識':'📖', '体験談・レポート':'✨', 'ブランド・商品紹介':'🛍️', 'Q&A・悩み相談':'💬' };
+  const { data, error } = await sb.from('articles').insert({
+    title, tag: category, body,
+    emoji: emojiMap[category] || '📝',
+    author_id: currentUser.id
+  }).select('id').single();
+  if (error) { showToast('⚠️ 投稿に失敗しました: ' + error.message, 'error'); return; }
+  const newArticle = {
+    id: data.id, title, tag: category, body,
+    date: new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\//g,'.'),
+    emoji: emojiMap[category] || '📝',
+    featured: false, author: currentUser.name, comments: []
+  };
+  dummyArticles.unshift(newArticle);
+  renderArticles();
+  closeModal('articleModal');
+  showToast('🎉 記事を投稿しました！', 'success');
+  document.getElementById('articleTitle').value = '';
+  document.getElementById('articleCategory').value = '';
+  document.getElementById('articleBody').value = '';
+  document.getElementById('articleTags').value = '';
+  document.getElementById('articleImagePreview').innerHTML = '';
+}
+
+// ===================== POST (SUPABASE) =====================
+let selectedRating = 0;
+
+function setRating(n) {
+  selectedRating = n;
+  document.querySelectorAll('#starRating span').forEach((s,i) => {
+    s.classList.toggle('active', i < n);
+  });
+}
+
+function previewImages(input) {
+  const preview = document.getElementById('imagePreview');
+  preview.innerHTML = '';
+  Array.from(input.files).forEach(f => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      preview.appendChild(img);
+    };
+    reader.readAsDataURL(f);
+  });
+}
+
+async function handlePost() {
+  if (!currentUser) { showToast('⚠️ ログインが必要です', 'error'); return; }
+  const product = document.getElementById('postProduct').value.trim();
+  const brand = document.getElementById('postBrand').value.trim();
+  const text = document.getElementById('postText').value.trim();
+  if (!product || !brand || !text) { showToast('⚠️ 商品名・ブランド名・本文は必須です', 'error'); return; }
+  if (selectedRating === 0) { showToast('⚠️ 評価を選択してください', 'error'); return; }
+  showToast('⏳ 投稿中...', 'success');
+  let productId;
+  const { data: existingProduct } = await sb.from('products').select('id').ilike('name', product).eq('brand', brand).maybeSingle();
+  if (existingProduct) {
+    productId = existingProduct.id;
+  } else {
+    const { data: newProduct, error: pErr } = await sb.from('products').insert({ name: product, brand, category: '未分類', emoji: '✨', tags: [] }).select('id').single();
+    if (pErr) { showToast('⚠️ 商品登録に失敗しました', 'error'); return; }
+    productId = newProduct.id;
+  }
+  const { error } = await sb.from('reviews').insert({ product_id: productId, user_id: currentUser.id, rating: selectedRating, text });
+  if (error) { showToast('⚠️ 投稿に失敗しました: ' + error.message, 'error'); return; }
+  const newReview = {
+    id: Date.now(), product, brand, rating: selectedRating, text,
+    author: currentUser.name,
+    date: new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\//g,'.'),
+    emoji: '✨', tags: []
+  };
+  allReviews.unshift(newReview);
+  renderReviews(allReviews.slice(0, 3));
+  closeModal('postModal');
+  showToast('🎉 レビューを投稿しました！', 'success');
+  document.getElementById('postProduct').value = '';
+  document.getElementById('postBrand').value = '';
+  document.getElementById('postText').value = '';
+  document.getElementById('imagePreview').innerHTML = '';
+  selectedRating = 0;
+  document.querySelectorAll('#starRating span').forEach(s => s.classList.remove('active'));
+}
+
+// ===================== COMMENTS (SUPABASE) =====================
+async function postArticleComment() {
+  if (!currentUser) { showToast('⚠️ コメントにはログインが必要です', 'error'); return; }
+  const text = document.getElementById('adCommentInput').value.trim();
+  if (!text) { showToast('⚠️ コメントを入力してください', 'error'); return; }
+  const articleId = parseInt(document.getElementById('articleDetailModal').dataset.articleId);
+  if (articleId < 1000000000000) {
+    const { error } = await sb.from('comments').insert({ article_id: articleId, user_id: currentUser.id, text });
+    if (error) console.warn('コメント保存エラー:', error.message);
+  }
+  const article = dummyArticles.find(a => a.id === articleId);
+  if (!article) return;
+  if (!article.comments) article.comments = [];
+  article.comments.push({
+    author: currentUser.name, text,
+    date: new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\//g,'.')
+  });
+  renderArticleComments(article.comments, articleId);
+  document.getElementById('adCommentInput').value = '';
+  showToast('💬 コメントを投稿しました！', 'success');
+}
+
+// ===================== LOAD FROM SUPABASE =====================
+async function loadReviewsFromDB() {
+  try {
+    const { data, error } = await sb
+      .from('reviews')
+      .select('id, rating, text, created_at, products(name, brand, emoji), profiles(name)')
+      .order('created_at', { ascending: false })
+      .limit(6);
+    if (error || !data?.length) return;
+    const loaded = data.map(r => ({
+      id: r.id,
+      product: r.products?.name || '不明',
+      brand: r.products?.brand || '',
+      rating: r.rating, text: r.text,
+      author: r.profiles?.name || 'ユーザー',
+      date: new Date(r.created_at).toLocaleDateString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\//g,'.'),
+      emoji: r.products?.emoji || '✨', tags: []
+    }));
+    allReviews = [...loaded, ...allReviews.filter(r => r.id > 1000)];
+    renderReviews(allReviews.slice(0, 3));
+  } catch(e) { console.warn('レビュー読み込みエラー:', e); }
+}
+
+async function loadArticlesFromDB() {
+  try {
+    const { data, error } = await sb
+      .from('articles')
+      .select('id, title, tag, body, emoji, created_at, profiles(name)')
+      .order('created_at', { ascending: false })
+      .limit(10);
+    if (error || !data?.length) return;
+    const loaded = data.map(a => ({
+      id: a.id, title: a.title, tag: a.tag, body: a.body,
+      emoji: a.emoji || '📝',
+      date: new Date(a.created_at).toLocaleDateString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\//g,'.'),
+      featured: false,
+      author: a.profiles?.name || 'ユーザー',
+      readTime: Math.max(1, Math.ceil((a.body?.length || 0) / 400)),
+      comments: []
+    }));
+    loaded.forEach(a => { if (!dummyArticles.find(d => d.id === a.id)) dummyArticles.unshift(a); });
+    renderArticles();
+  } catch(e) { console.warn('記事読み込みエラー:', e); }
+}
+
+// ===================== MODAL UTILS =====================
+function openModal(id) {
+  document.getElementById(id).classList.add('show');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+function switchModal(fromId, toId) {
+  closeModal(fromId);
+  setTimeout(() => openModal(toId), 150);
+}
+
+// Close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('show');
+  });
+});
+
+// ===================== TOAST =====================
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ===================== SCROLL ANIM =====================
+function observeAll() {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fade-in:not(.visible)').forEach(el => observer.observe(el));
+}
+
+// ===================== INIT =====================
+renderReviews(allReviews.slice(0,3));
+renderProducts(dummyProducts);
+renderArticles();
+renderFaq();
+observeAll();
+
+// Supabaseからデータを非同期ロード（失敗してもダミーデータで表示継続）
+loadReviewsFromDB();
+loadArticlesFromDB();
+</script>
+</body>
+</html>
